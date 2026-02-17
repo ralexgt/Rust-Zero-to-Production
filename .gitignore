@@ -1,2 +1,6 @@
+# Rust stuff
 /target
-configuration.*
+
+# Config files
+/configuration
+/configuration.*
