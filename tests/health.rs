@@ -1,5 +1,6 @@
 use std::net::TcpListener;
 
+// use sqlx::{Connection, PgConnection};
 use zero2prod::{configuration::get_configuration, startup::run};
 
 #[tokio::test]
@@ -20,9 +21,14 @@ async fn check_health_success() {
 #[tokio::test]
 async fn subscribe_returns_200_for_valid_req() {
     let address = spawn_app().await;
+    // let configuration = get_configuration().expect("Config should be in root");
+    // let connection_string = configuration.database.connection_string();
+    // let mut db_connection = PgConnection::connect(&connection_string)
+    // .await
+    // .expect("Failed to connect to local database");
     let client = reqwest::Client::new();
-    let body = "name=Le%20Guin&email=ursula_le_guin%40gmail.com";
 
+    let body = "name=Le%20Guin&email=ursula_le_guin%40gmail.com";
     let response = client
         .post(format!("{}/subscriptions", address))
         .header("Content-Type", "application/x-www-form-urlencoded")
@@ -32,6 +38,14 @@ async fn subscribe_returns_200_for_valid_req() {
         .expect("Failed to execute request");
 
     assert_eq!(200, response.status().as_u16());
+
+    // let saved = sqlx::query!("SELECT email, name FROM subscriptions")
+    // .fetch_one(&mut db_connection)
+    // .await
+    // .expect("Failed to fetch the subscription in test");
+
+    // assert_eq!(saved.name, "Le Guin");
+    // assert_eq!(saved.email, "ursula_le_guin@gmail.com");
 }
 
 #[tokio::test]
