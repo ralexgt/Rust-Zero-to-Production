@@ -1,6 +1,6 @@
 use std::net::TcpListener;
 
-use zero2prod::startup::run;
+use zero2prod::{configuration::get_configuration, startup::run};
 
 #[tokio::test]
 async fn check_health_success() {
@@ -65,11 +65,14 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
 }
 
 async fn spawn_app() -> String {
-    let listener = TcpListener::bind("127.0.0.1:0").expect("Failed to bind on random port");
+    let configuration = get_configuration().expect("Configuration missing");
+    // :0 assigns a random free port
+    let listener = TcpListener::bind(format!("{}:0", configuration.host))
+        .expect("Failed to bind on random port");
     // Save the port to return it later
     let port = listener.local_addr().unwrap().port();
     let server = run(listener).expect("Failed to bind address");
     _ = tokio::spawn(server);
 
-    format!("http://127.0.0.1:{port}")
+    format!("http://{}:{port}", configuration.host)
 }
