@@ -2,5 +2,5 @@
 /target
 
 # Config files
-/configuration
-/configuration.*
+# /configuration
+# /configuration.*
